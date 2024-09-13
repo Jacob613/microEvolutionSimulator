@@ -6,7 +6,7 @@ from pygame.locals import *
 
 pygame.init()
 
-# please ensure pygame is installed before attempting to run
+# please ensure pygame is installed before attempting to run; requires atleast python 3.10 to run
 
 # the rate of mutation is 1 / mutation_chance
 MUTATION_CHANCE = 500
