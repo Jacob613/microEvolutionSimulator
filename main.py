@@ -6,13 +6,18 @@ from pygame.locals import *
 
 pygame.init()
 
+# please ensure pygame is installed before attempting to run
+
+# the rate of mutation is 1 / mutation_chance
 MUTATION_CHANCE = 500
 MATING_ENERGY_THRESHOLD = 1500
 BASE_ENERGY_LEVEL = 1000
 
+# splits a string into a list, with each item containing 3 characters
 def splitIntoCodons(strand):
     return [(strand[i:i+3]) for i in range(0, len(strand), 3)]
 
+# checks if modifying an x or y coordinate would put it outside of the bounds of the map
 def inBounds(coord, vel):
     if coord + vel > 1000 or coord + vel < 0:
         return False
@@ -46,7 +51,7 @@ class Cell:
     
     def translation(self, mRNA):
         geneValue = 0
-        geneIncrement = 0
+        geneIncrement = 0 #used to determine which gene the geneValue is currently being calculated for; incremented at every 'AAA' codon
         mRNA = splitIntoCodons(mRNA)
         
         for codon in mRNA:
@@ -61,7 +66,7 @@ class Cell:
                         
                 geneValue = 0
                 geneIncrement += 1
-                continue
+                continue # if codon is a start codon: set the variable which the geneValue has been calculated for; increment to the next gene
             else:
                 for c in codon:
                     match c:
@@ -74,6 +79,7 @@ class Cell:
                         case 'G':
                             geneValue += 100
 
+    # sets the variables of the cell
     def birth(self):
         self.translation(self.transcription())
         
@@ -86,8 +92,7 @@ class Cell:
             self.y += math.sin(self.direction)
             self.energyLevel -= 1
         
-        #print(self.spasmRate)
-        if random.random() < (self.spasmRate / 100): #probability that cell gets to spasm, i.e make another move in a random direction
+        if random.random() < (self.spasmRate / 100): # probability that cell gets to spasm, i.e make another move in a random direction
             xDir = random.randint(0, 360)
             yDir = random.randint(0, 360)
             
@@ -122,11 +127,16 @@ def mate(cellA, cellB, energy):
     else:
         longerStrand = DNAstrandB
         shorterStrand = DNAstrandA
+
+    # the first segment will be somewhere between 0 and the the middle of the shorter strand
     
     splitPointA = random.randint(1, math.ceil(len(shorterStrand)/2))
+    
+    # the second segment will be somewhere between the middle and end of the shorter strand
+    
     splitPointB = random.randint(splitPointA + 1, len(shorterStrand))
     
-    
+    # decides which parent will provide DNA for the first section
     if random.randint(1,2) == 1:
         for i in range(0, splitPointA):
             newStrand += longerStrand[i]
@@ -134,13 +144,15 @@ def mate(cellA, cellB, energy):
         for i in range(0, splitPointA):
             newStrand += shorterStrand[i]
 
+    # decides which parent will provide DNA for the second section
     if random.randint(1,2) == 1:
         for i in range(splitPointA, splitPointB):
             newStrand += longerStrand[i]
     else:
         for i in range(splitPointA, splitPointB):
             newStrand += shorterStrand[i]
-            
+
+    # decides which parent will provide DNA for the final section
     if random.randint(1,2) == 1:
         for i in range(splitPointB, len(shorterStrand)):
             newStrand += longerStrand[i]
@@ -148,6 +160,7 @@ def mate(cellA, cellB, energy):
         for i in range(splitPointB, len(shorterStrand)):
             newStrand += shorterStrand[i]
 
+    # any left over DNA from the longer stand will be added to end of the new strand
     for i in range(len(shorterStrand), len(longerStrand)):
         newStrand += longerStrand[i]
     
@@ -157,15 +170,15 @@ def mate(cellA, cellB, energy):
             x = random.randint(1,4)
             match x:
                 case 1:
-                    newStrand = newStrand[:i] + 'A' + newStrand[i + 1:]
+                    newStrand = newStrand[:i] + 'A' + newStrand[i + 1:] # strings are immutable in python, this replaces the old string with a new modified string
                 case 2:
                     newStrand = newStrand[:i] + 'T' + newStrand[i + 1:]
                 case 3:
                     newStrand = newStrand[:i] + 'C' + newStrand[i + 1:]
                 case 4: 
                     newStrand = newStrand[:i] + 'G' + newStrand[i + 1:]
+
     
-    #print("Cell born with DNA: " + newStrand)
     newCell = Cell(cellA.x, cellA.y, energy, newStrand)
     newCell.birth()
     return newCell
@@ -183,8 +196,9 @@ def inContactWithCell(target, container):
                 if container[i].y >= target.y and container[i].y <= target.y + target.size:
                     return i
     return -1
-            
 
+
+# checks if the cell is in contact with food or if the food is in contact with the cell
 def inContactWithFood(target, container, foodSize):
     for i in range(len(container)):
         if container[i].x >= target.x and container[i].x <= target.x + target.size:
@@ -222,10 +236,12 @@ DISPLAY.fill(WHITE)
 pygame.draw.rect(DISPLAY,BLUE,(200,150,100,50))
     
 cycleCounter = 0
-cycleSpeed = 100
+cycleSpeed = 100 # the amount of frames in between each cycle
 
+# A regeneration is when the program takes all the alive cells and puts them in the middle, and also regenrates the food
+# This is to really help demonstrate which phenotype is dominant
 regenerationCounter = 0
-regenerationSpeed = 300
+regenerationSpeed = 300 # the amount of cycles in between each regeneration
 
 populationSize = input("Enter population size: ")
 
@@ -238,10 +254,11 @@ foodHolder = []
 
 spawnFood()
 
+# randomly generates n cells with one of four genotypes
 for i in range(int(populationSize)):
     x = random.randint(1, 4)
     match x:
-        #genes: size-direction-spasmRate
+        # genes: size-direction-spasmRate
         case 1:
             cellHolder.append(Cell(500, 500, BASE_ENERGY_LEVEL, "TTTAAATTTCTTTTTCCCTTT"))
         case 2:
@@ -268,21 +285,21 @@ while run:
         #print(numberOfCellsAlive)
         for i in range(len(cellHolder)):
             if not cellHolder[i].dead:
-                #Is out of energy? -> become dead
+                # Is out of energy? -> become dead
                 if cellHolder[i].energyLevel <= 0:
                     cellHolder[i].dead = True
                     #print("cell died")
                     continue
-                #move every frame
+                # move every frame
                 cellHolder[i].move()
-                #In contact with food? -> gain energy, delete food from world
+                # In contact with food? -> gain energy, delete food from world
                 foodContactIndex = inContactWithFood(cellHolder[i], foodHolder, 20)
                 if foodContactIndex != -1:
                     cellHolder[i].energyLevel += foodHolder[foodContactIndex].value
                     del foodHolder[foodContactIndex]
                     #print("Food eaten")
 
-                #In contact with cell? -> if both cells are at correct energy level, expend energy and mate
+                # In contact with cell? -> if both cells are at correct energy level, expend energy and mate
                 cellContactIndex = inContactWithCell(cellHolder[i], cellHolder)
                 if cellContactIndex != -1:
                     if cellHolder[i].energyLevel > MATING_ENERGY_THRESHOLD and cellHolder[cellContactIndex].energyLevel > MATING_ENERGY_THRESHOLD:
@@ -302,7 +319,8 @@ while run:
                 spawnFood()
                 regenerationCounter = 0
                 print("regenerated")
-    
+
+        
         ####graphics####
 
         for event in pygame.event.get():
