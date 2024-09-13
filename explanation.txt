@@ -2,7 +2,7 @@ The program simulates cell's which can primarily only move in one direction base
 The cells contain three genes: size, direction, and spasmRate
 
 size gene: determines the size of the cell; the cell is a square so area of cell = size^2
-direction gene: determines the direction the cell can move in; this is an angle, cell moves a distance of 1 along the hypontenuse of a right triangle formed from this the direction angle.
+direction gene: determines the direction the cell can move in; this is an angle, cell moves a distance of 1 along the hypontenuse of a right triangle formed from this direction angle.
 spasmRate gene: determines the rate at which the cell will "spasm"(move one unit) in a random direction
 
 The cells genes are determined with a strand of DNA
@@ -37,7 +37,7 @@ the simulation runs until every cell is dead
 Every 300 cycles, a "regeneration" happens: all living cells are brought to the center and food is regenerated(with same bias as before)
 This is to encourage mating by bringing cells closer and also to more clearly display which phenotype has become dominant
 
-***One thing to consider is that size has no effect on energy depletion. This works to benefit the cell because bigger size = more surface area to consume food. you can see this if you run the simulation for long enough because a mutation will occur that causes the cells to grow massive, and this will quickly become the dominant phenotype.
-***Size could even become a selective feature: in environments with lots of food of food being bigger would be advantageous because you could take up more food and have more surface area to find mates; in areas with less food being smaller would be advantageous because you would expend less energy and live longer to find a mate
+***One thing to consider is that size has no effect on energy depletion. This works to benefit the cell because bigger size = more surface area to consume food. you can see this if you run the simulation for long enough because a mutation will occur that causes the cells to grow massive, and this will quickly become the dominant phenotype. To correct this, energy expenditure would need to be dependent on the size gene of the cell
+***Size could even become a selective feature: in environments with lots of food of food being bigger would be advantageous because you could take up more food and have more surface area to find mates; in areas with less food, being smaller would be advantageous because you would expend less energy and live longer to find a mate
 
 Additionally, the code for this project is very large and inefficient. It was written as my first project after taking a year long break from coding. If I were to continue working on it I would optimize the code heavily
