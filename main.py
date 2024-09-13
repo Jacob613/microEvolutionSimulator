@@ -320,7 +320,3 @@ while run:
         
     else:
         cycleCounter += 1
-                    
-        
-
-#add: display, make it fair for cells
