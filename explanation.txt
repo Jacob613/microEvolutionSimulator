@@ -1,0 +1,40 @@
+The program simulates cell's which can primarily only move in one direction based on their genes
+The cells contain three genes: size, direction, and spasmRate
+
+size gene: determines the size of the cell; the cell is a square so area of cell = size^2
+direction gene: determines the direction the cell can move in; this is an angle, cell moves a distance of 1 along the hypontenuse of a right triangle formed from this the direction angle.
+spasmRate gene: determines the rate at which the cell will "spasm"(move one unit) in a random direction
+
+The cells genes are determined with a strand of DNA
+The transcription method in the cell class converts this DNA strand into its complimentary RNA strand
+The translation method in the cell class splits the RNA into codons and then turns each codon into a number using the following key: A = 0, U = 10, C = 50, G = 100
+For example, the codon CUG would be equal to 50 + 10 + 100, which equals 160
+AAA is the start/stop codon, which signifies to the program that the codons following it will be the value for a certain gene, the next time the program sees AAA it adds up all the codons, assigns it to the gene variable, and then moves on to the next gene
+Since the cells have 3 genes, their DNA sequence will look something like TTTACGTTTGGGTTTCGATTT 
+
+The program also contains food, which has a value of energy that it gives the cell for consuming it
+
+cells are blue and food is red
+
+The program starts by prompting the user to select a population size, amount of food, and "food bias"
+The food bias chooses where the food primarily spawns on the screen; the options are "none" meaning no bias (food spawns at random), "right", "left", "up", or "down" which all limit the food to their respective side of the screen
+
+The population of cells is placed in the center and the simulation begins
+
+Every cycle, each cell moves one time and does 3 checks: 
+1. Am I out of energy? if so, die
+2. Am I touching food? if so, consume it
+3. Am I touching another cell and can we both mate? if so, mate
+
+Mating works by combining the the parents DNA at random. this is done by dividing the new strand into 3 sections
+Each section is then randomly assigned to one of the parents
+if one of the parents DNA is longer than than the others, then all of the extra DNA from this parent is added to the end of the new strand
+After this process, each nitrogenous base in the new strand is iterated over and there is a 1/500 chance that the base is mutated
+***Because each cell only has 3 genes, I have decided to not include deletion or insertion mutations as they would have too drastic of an effect 
+
+the simulation runs until every cell is dead
+
+***One thing to consider is that size has no effect on energy depletion. This works to benefit the cell because bigger size = more surface area to consume food. you can see this if you run the simulation for long enough because a mutation will occur that causes the cells to grow massive, and this will quickly become the dominant phenotype.
+***If I were to continue working on this project, I would change this so that energy expenditure is directly related to the size of the cell
+
+Additionally, the code for this project is very large and inefficient. It was written as my first project after taking a year long break from coding. If I were to continue working on it I would optimize the code heavily
